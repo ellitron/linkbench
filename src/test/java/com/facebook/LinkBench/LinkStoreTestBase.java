@@ -607,6 +607,11 @@ public abstract class LinkStoreTestBase extends TestCase {
           reqStore.countLinks + reqStore.multigetLinks + reqStore.getLinkLists);
       // Check that the proportion of operations is roughly right - within 1%
       // For now, updates are actually implemented as add operations
+      System.out.println("adds: " + reqStore.adds + "/" + (double)requests + "=" + reqStore.adds / (double)requests + " (target " + (p_add + p_up) + ")");
+      System.out.println("deletes: " + reqStore.deletes + "/" + (double)requests + "=" + reqStore.deletes / (double)requests + " (target " + p_del + ")");
+      System.out.println("countLinks: " + reqStore.countLinks + "/" + (double)requests + "=" + reqStore.countLinks / (double)requests + " (target " + p_count + ")");
+      System.out.println("multigetLinks: " + reqStore.multigetLinks + "/" + (double)requests + "=" + reqStore.multigetLinks / (double)requests + " (target " + p_multiget + ")");
+      System.out.println("getLinkLists: " + reqStore.getLinkLists + "/" + (double)requests + "=" + reqStore.getLinkLists / (double)requests + " (target " + p_getlinks + ")");
       assertTrue(Math.abs(reqStore.adds / (double)requests -
           (p_add + p_up)) < 0.01);
       assertTrue(Math.abs(reqStore.updates /
