@@ -493,6 +493,11 @@ public class LinkBenchRequest implements Runnable {
         link.data = linkAddDataGen.fill(rng,
                                       new byte[(int)linkDataSize.choose(rng)]);
 
+        if (Level.TRACE.isGreaterOrEqual(debuglevel)) {
+          logger.trace("addLink id1=" + link.id1 + " link_type="
+                    + link.link_type + " id2=" + link.id2);
+        }
+        
         starttime = System.nanoTime();
         // no inverses for now
         boolean alreadyExists = linkStore.addLink(dbid, link, true);
@@ -884,6 +889,9 @@ public class LinkBenchRequest implements Runnable {
     if (Level.TRACE.isGreaterOrEqual(debuglevel)) {
        logger.trace("getLinkList(id1=" + id1 + ", link_type="  + link_type
                      + ") => count=" + (links == null ? 0 : links.length));
+       for(Link link: links) {
+           logger.trace(link.toString());
+       }
     }
     // If there were more links than limit, record
     if (links != null && links.length >= linkStore.getRangeLimit()) {

@@ -143,6 +143,8 @@ public class LinkDistributions {
   public static LinkDistribution loadLinkDistribution(Properties props,
       long minid1, long maxid1) {
     Logger logger = Logger.getLogger(ConfigUtil.LINKBENCH_LOGGER);
+    logger.setLevel(ConfigUtil.getDebugLevel(props));
+    
     String nlinks_func; // distribution function for #links
 
     nlinks_func = ConfigUtil.getPropertyRequired(props, Config.NLINKS_FUNC);
@@ -193,6 +195,8 @@ public class LinkDistributions {
       Properties props, long minid1, long maxid1) {
     try {
       Logger logger = Logger.getLogger(ConfigUtil.LINKBENCH_LOGGER);
+      logger.setLevel(ConfigUtil.getDebugLevel(props));
+      
       logger.debug("Using LinkDistribution class " + className);
       ProbabilityDistribution pDist = ClassLoadUtil.newInstance(className,
                                                 ProbabilityDistribution.class);

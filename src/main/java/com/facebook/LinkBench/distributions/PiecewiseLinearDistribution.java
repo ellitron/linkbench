@@ -137,7 +137,7 @@ public abstract class PiecewiseLinearDistribution implements ProbabilityDistribu
     assert(u <= p1.probability);
 
     // Assuming piecewise linear, so equally as probably as p1.value
-    return p1.value;
+    return p1.value * (double) n / (double) 10000000;
   }
 
   @Override
