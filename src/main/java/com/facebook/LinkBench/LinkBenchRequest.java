@@ -507,6 +507,12 @@ public class LinkBenchRequest implements Runnable {
           logger.trace("addLink id1=" + link.id1 + " link_type="
                     + link.link_type + " id2=" + link.id2 + " added=" + added);
         }
+        
+        long timetaken = (endtime - starttime)/1000;
+        if (timetaken > 5000) {
+            logger.debug(timetaken + "ms: addLink id1=" + link.id1 + " link_type="
+                    + link.link_type + " id2=" + link.id2 + " added=" + added);
+        }
       } else if (r <= pc_deletelink) {
         type = LinkBenchOp.DELETE_LINK;
         long id1 = chooseRequestID(DistributionType.LINK_WRITES, link.id1);
@@ -519,6 +525,12 @@ public class LinkBenchRequest implements Runnable {
         endtime = System.nanoTime();
         if (Level.TRACE.isGreaterOrEqual(debuglevel)) {
           logger.trace("deleteLink id1=" + id1 + " link_type=" + link_type
+                     + " id2=" + id2);
+        }
+        
+        long timetaken = (endtime - starttime)/1000;
+        if (timetaken > 5000) {
+            logger.debug(timetaken + "ms: deleteLink id1=" + id1 + " link_type=" + link_type
                      + " id2=" + id2);
         }
       } else if (r <= pc_updatelink) {
@@ -543,6 +555,12 @@ public class LinkBenchRequest implements Runnable {
           logger.trace("updateLink id1=" + link.id1 + " link_type="
                 + link.link_type + " id2=" + link.id2 + " found=" + found);
         }
+        
+        long timetaken = (endtime - starttime)/1000;
+        if (timetaken > 5000) {
+            logger.debug(timetaken + "ms: updateLink id1=" + link.id1 + " link_type="
+                + link.link_type + " id2=" + link.id2 + " found=" + found);
+        }
       } else if (r <= pc_countlink) {
 
         type = LinkBenchOp.COUNT_LINK;
@@ -554,6 +572,12 @@ public class LinkBenchRequest implements Runnable {
         endtime = System.nanoTime();
         if (Level.TRACE.isGreaterOrEqual(debuglevel)) {
           logger.trace("countLink id1=" + id1 + " link_type=" + link_type
+                     + " count=" + count);
+        }
+        
+        long timetaken = (endtime - starttime)/1000;
+        if (timetaken > 5000) {
+            logger.debug(timetaken + "ms: countLink id1=" + id1 + " link_type=" + link_type
                      + " count=" + count);
         }
       } else if (r <= pc_getlink) {
@@ -580,6 +604,11 @@ public class LinkBenchRequest implements Runnable {
           numnotfound += nid2s - found;
         }
 
+        long timetaken = (endtime - starttime)/1000;
+        if (timetaken > 5000) {
+            logger.debug(timetaken + "ms: getLink id1=" + id1 + " link_type=" + link_type
+                     + " id2s=" + id2s);
+        }
       } else if (r <= pc_getlinklist) {
 
         type = LinkBenchOp.GET_LINKS_LIST;
@@ -591,15 +620,24 @@ public class LinkBenchRequest implements Runnable {
         } else {
           long id1 = chooseRequestID(DistributionType.LINK_READS, link.id1);
           long link_type = id2chooser.chooseRandomLinkType(rng);
+          
           starttime = System.nanoTime();
           links = getLinkList(id1, link_type);
           endtime = System.nanoTime();
+          
+          long timetaken = (endtime - starttime) / 1000;
+          if (timetaken > 5000) {
+            int count = ((links == null) ? 0 : links.length);
+            logger.debug(timetaken + "ms: getLinkList id1=" + id1 + " link_type=" + link_type + " count=" + count);
+          }
         }
 
         int count = ((links == null) ? 0 : links.length);
         if (recordStats) {
           stats.addStats(LinkBenchOp.RANGE_SIZE, count, false);
         }
+        
+        
       } else if (r <= pc_addnode) {
         type = LinkBenchOp.ADD_NODE;
         Node newNode = createAddNode();
@@ -609,6 +647,12 @@ public class LinkBenchRequest implements Runnable {
         if (Level.TRACE.isGreaterOrEqual(debuglevel)) {
           logger.trace("addNode " + newNode);
         }
+        
+        long timetaken = (endtime - starttime) / 1000;
+        if (timetaken > 5000) {
+          logger.debug(timetaken + "ms: addNode " + newNode);
+        }
+          
       } else if (r <= pc_updatenode) {
         type = LinkBenchOp.UPDATE_NODE;
         // Choose an id that has previously been created (but might have
@@ -625,6 +669,12 @@ public class LinkBenchRequest implements Runnable {
         if (Level.TRACE.isGreaterOrEqual(debuglevel)) {
           logger.trace("updateNode " + newNode + " changed=" + changed);
         }
+        
+        long timetaken = (endtime - starttime) / 1000;
+        if (timetaken > 5000) {
+          logger.debug(timetaken + "ms: updateNode " + newNode + " changed=" + changed);
+        }
+        
       } else if (r <= pc_deletenode) {
         type = LinkBenchOp.DELETE_NODE;
         long idToDelete = chooseRequestID(DistributionType.NODE_DELETES,
@@ -637,6 +687,12 @@ public class LinkBenchRequest implements Runnable {
         if (Level.TRACE.isGreaterOrEqual(debuglevel)) {
           logger.trace("deleteNode " + idToDelete + " deleted=" + deleted);
         }
+        
+        long timetaken = (endtime - starttime) / 1000;
+        if (timetaken > 5000) {
+          logger.debug(timetaken + "ms: deleteNode " + idToDelete + " deleted=" + deleted);
+        }
+        
       } else if (r <= pc_getnode) {
         type = LinkBenchOp.GET_NODE;
         starttime = System.nanoTime();
@@ -652,11 +708,19 @@ public class LinkBenchRequest implements Runnable {
             logger.trace("getNode " + fetched);
           }
         }
+        
+        long timetaken = (endtime - starttime) / 1000;
+        if (timetaken > 5000) {
+            if (fetched == null) {
+            logger.debug(timetaken + "ms: getNode " + idToFetch + " not found");
+          } else {
+            logger.debug(timetaken + "ms: getNode " + fetched);
+          }
+        }
       } else {
         logger.error("No-op in requester: last probability < 1.0");
         return false;
       }
-
 
       // convert to microseconds
       long timetaken = (endtime - starttime)/1000;
