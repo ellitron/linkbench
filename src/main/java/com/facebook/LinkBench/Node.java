@@ -65,4 +65,10 @@ public class Node {
                    + "timestamp=" + time + ",data="
                    + Arrays.toString(data) + ")";
   }
+  
+  public String toSimpleString() {
+    return "Node(" + "id=" + id + ",type=" + type + ",version=" + version + ","
+                   + "timestamp=" + time + ",datalen="
+                   + data.length + ")";
+  }
 }

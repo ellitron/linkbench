@@ -50,6 +50,9 @@ public class LinkBenchRequest implements Runnable {
   /** Requests per second: <= 0 for unlimited rate */
   private long requestrate;
 
+  /** Threshold over which to report high latency operations */
+  long latReportThreshold;
+  
   /** Maximum number of failed requests: < 0 for unlimited */
   private long maxFailedRequests;
 
@@ -200,6 +203,7 @@ public class LinkBenchRequest implements Runnable {
     debuglevel = ConfigUtil.getDebugLevel(props);
     dbid = ConfigUtil.getPropertyRequired(props, Config.DBID);
     numRequests = ConfigUtil.getLong(props, Config.NUM_REQUESTS);
+    latReportThreshold = ConfigUtil.getLong(props, Config.LAT_REPORT_THRESHOLD);
     requestrate = ConfigUtil.getLong(props, Config.REQUEST_RATE, 0L);
     maxFailedRequests = ConfigUtil.getLong(props,  Config.MAX_FAILED_REQUESTS, 0L);
     warmupTime = Math.max(0, ConfigUtil.getLong(props, Config.WARMUP_TIME, 0L));
@@ -509,8 +513,8 @@ public class LinkBenchRequest implements Runnable {
         }
         
         long timetaken = (endtime - starttime)/1000;
-        if (timetaken > 5000) {
-            logger.debug(timetaken + "ms: addLink id1=" + link.id1 + " link_type="
+        if (timetaken > latReportThreshold) {
+            logger.info(timetaken/1000 + "ms: addLink id1=" + link.id1 + " link_type="
                     + link.link_type + " id2=" + link.id2 + " added=" + added);
         }
       } else if (r <= pc_deletelink) {
@@ -529,8 +533,8 @@ public class LinkBenchRequest implements Runnable {
         }
         
         long timetaken = (endtime - starttime)/1000;
-        if (timetaken > 5000) {
-            logger.debug(timetaken + "ms: deleteLink id1=" + id1 + " link_type=" + link_type
+        if (timetaken > latReportThreshold) {
+            logger.info(timetaken/1000 + "ms: deleteLink id1=" + id1 + " link_type=" + link_type
                      + " id2=" + id2);
         }
       } else if (r <= pc_updatelink) {
@@ -557,8 +561,8 @@ public class LinkBenchRequest implements Runnable {
         }
         
         long timetaken = (endtime - starttime)/1000;
-        if (timetaken > 5000) {
-            logger.debug(timetaken + "ms: updateLink id1=" + link.id1 + " link_type="
+        if (timetaken > latReportThreshold) {
+            logger.info(timetaken/1000 + "ms: updateLink id1=" + link.id1 + " link_type="
                 + link.link_type + " id2=" + link.id2 + " found=" + found);
         }
       } else if (r <= pc_countlink) {
@@ -576,8 +580,8 @@ public class LinkBenchRequest implements Runnable {
         }
         
         long timetaken = (endtime - starttime)/1000;
-        if (timetaken > 5000) {
-            logger.debug(timetaken + "ms: countLink id1=" + id1 + " link_type=" + link_type
+        if (timetaken > latReportThreshold) {
+            logger.info(timetaken/1000 + "ms: countLink id1=" + id1 + " link_type=" + link_type
                      + " count=" + count);
         }
       } else if (r <= pc_getlink) {
@@ -605,9 +609,9 @@ public class LinkBenchRequest implements Runnable {
         }
 
         long timetaken = (endtime - starttime)/1000;
-        if (timetaken > 5000) {
-            logger.debug(timetaken + "ms: getLink id1=" + id1 + " link_type=" + link_type
-                     + " id2s=" + id2s);
+        if (timetaken > latReportThreshold) {
+            logger.info(timetaken/1000 + "ms: getLink id1=" + id1 + " link_type=" + link_type
+                     + " id2 count=" + id2s.length);
         }
       } else if (r <= pc_getlinklist) {
 
@@ -626,9 +630,9 @@ public class LinkBenchRequest implements Runnable {
           endtime = System.nanoTime();
           
           long timetaken = (endtime - starttime) / 1000;
-          if (timetaken > 5000) {
+          if (timetaken > latReportThreshold) {
             int count = ((links == null) ? 0 : links.length);
-            logger.debug(timetaken + "ms: getLinkList id1=" + id1 + " link_type=" + link_type + " count=" + count);
+            logger.info(timetaken/1000 + "ms: getLinkList id1=" + id1 + " link_type=" + link_type + " count=" + count);
           }
         }
 
@@ -649,8 +653,8 @@ public class LinkBenchRequest implements Runnable {
         }
         
         long timetaken = (endtime - starttime) / 1000;
-        if (timetaken > 5000) {
-          logger.debug(timetaken + "ms: addNode " + newNode);
+        if (timetaken > latReportThreshold) {
+          logger.info(timetaken/1000 + "ms: addNode " + newNode.toSimpleString());
         }
           
       } else if (r <= pc_updatenode) {
@@ -671,8 +675,8 @@ public class LinkBenchRequest implements Runnable {
         }
         
         long timetaken = (endtime - starttime) / 1000;
-        if (timetaken > 5000) {
-          logger.debug(timetaken + "ms: updateNode " + newNode + " changed=" + changed);
+        if (timetaken > latReportThreshold) {
+          logger.info(timetaken/1000 + "ms: updateNode " + newNode.toSimpleString() + " changed=" + changed);
         }
         
       } else if (r <= pc_deletenode) {
@@ -689,8 +693,8 @@ public class LinkBenchRequest implements Runnable {
         }
         
         long timetaken = (endtime - starttime) / 1000;
-        if (timetaken > 5000) {
-          logger.debug(timetaken + "ms: deleteNode " + idToDelete + " deleted=" + deleted);
+        if (timetaken > latReportThreshold) {
+          logger.info(timetaken/1000 + "ms: deleteNode " + idToDelete + " deleted=" + deleted);
         }
         
       } else if (r <= pc_getnode) {
@@ -710,11 +714,11 @@ public class LinkBenchRequest implements Runnable {
         }
         
         long timetaken = (endtime - starttime) / 1000;
-        if (timetaken > 5000) {
+        if (timetaken > latReportThreshold) {
             if (fetched == null) {
-            logger.debug(timetaken + "ms: getNode " + idToFetch + " not found");
+            logger.info(timetaken/1000 + "ms: getNode " + idToFetch + " not found");
           } else {
-            logger.debug(timetaken + "ms: getNode " + fetched);
+            logger.info(timetaken/1000 + "ms: getNode " + fetched.toSimpleString());
           }
         }
       } else {

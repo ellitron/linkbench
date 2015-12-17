@@ -74,6 +74,8 @@ public class Config {
   public static final String NUM_REQUESTERS = "requesters";
   public static final String REQUEST_RANDOM_SEED = "request_random_seed";
 
+  public static final String LAT_REPORT_THRESHOLD = "lat_report_threshold";
+  
   // Distribution of accesses to IDs
   public static final String READ_CONFIG_PREFIX = "read_";
   public static final String WRITE_CONFIG_PREFIX = "write_";
